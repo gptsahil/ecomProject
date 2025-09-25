@@ -38,7 +38,7 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(max = 15)
+    @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     @Column(name = "password")
     private  String password;
 
