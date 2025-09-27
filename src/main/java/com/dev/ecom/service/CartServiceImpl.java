@@ -76,6 +76,7 @@ public class CartServiceImpl implements CartService {
 
         //Save Cart Item
         cartItemRepository.save(cartItemToAdd);
+        cart.getCartItems().add(cartItemToAdd);
         product.setQuantity(product.getQuantity() - quantity);
         cart.setTotalPrice(cart.getTotalPrice() + (product.getSpecialPrice() * quantity));
         cartRepository.save(cart);
@@ -103,10 +104,12 @@ public class CartServiceImpl implements CartService {
         List<CartDTO> cartDTOs = carts.stream()
                 .map(cart -> {
                     CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-                    List<ProductDTO> productDTO = cart.getCartItems().stream()
-                            .map(p -> modelMapper.map(p.getProduct(), ProductDTO.class))
-                            .collect(Collectors.toList());
-                    cartDTO.setProducts(productDTO);
+                    List<ProductDTO> products = cart.getCartItems().stream().map(cartItem -> {
+                        ProductDTO productDTO = modelMapper.map(cartItem.getProduct(),  ProductDTO.class);
+                        productDTO.setQuantity(cartItem.getQuantity());
+                        return productDTO;
+                    }).collect(Collectors.toList());
+                    cartDTO.setProducts(products);
                     return cartDTO;
                 }).collect(Collectors.toList());
 
